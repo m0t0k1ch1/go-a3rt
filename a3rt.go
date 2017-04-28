@@ -55,7 +55,7 @@ func (client *Client) SetApiKey(apiKey string) {
 	client.config.ApiKey = apiKey
 }
 
-func (client *Client) doApi(ctx context.Context, method string, uri string, params url.Values, res interface{}) error {
+func (client *Client) doApi(ctx context.Context, method, uri string, params url.Values, res interface{}) error {
 	if len(client.config.ApiKey) == 0 {
 		return ErrNoApiKey
 	}
