@@ -20,7 +20,7 @@ var (
 )
 
 type Config struct {
-	BaseUri *url.URL
+	BaseUri string
 	ApiKey  string
 }
 
@@ -30,25 +30,16 @@ type Client struct {
 }
 
 func NewClient() *Client {
-	u, _ := url.Parse(DefaultBaseUri)
-
 	return &Client{
 		Client: http.DefaultClient,
 		config: &Config{
-			BaseUri: u,
+			BaseUri: DefaultBaseUri,
 		},
 	}
 }
 
-func (client *Client) SetBaseUri(baseUri string) error {
-	u, err := url.Parse(baseUri)
-	if err != nil {
-		return err
-	}
-
-	client.config.BaseUri = u
-
-	return nil
+func (client *Client) SetBaseUri(baseUri string) {
+	client.config.BaseUri = baseUri
 }
 
 func (client *Client) SetApiKey(apiKey string) {
@@ -60,7 +51,10 @@ func (client *Client) doApi(ctx context.Context, method, uri string, params url.
 		return ErrNoApiKey
 	}
 
-	u := client.config.BaseUri
+	u, err := url.Parse(client.config.BaseUri)
+	if err != nil {
+		return err
+	}
 	u.Path = path.Join(u.Path, uri)
 
 	params.Add("apikey", client.config.ApiKey)
